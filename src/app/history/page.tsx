@@ -36,6 +36,7 @@ export default function HistoryPage() {
   const [expenses, setExpenses] = useState<(Expense & {id: string})[]>([]);
   const [monthlyIncome, setMonthlyIncome] = useState<number>(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("Semua");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -74,6 +75,7 @@ export default function HistoryPage() {
     async function fetchMonthData() {
       if (!user || !selectedMonth) return;
       setIsLoadingData(true);
+      setSelectedCategoryFilter("Semua"); // Reset filter on month change
       try {
         const [userBudgets, monthExpenses, income] = await Promise.all([
           getBudgets(user.uid, selectedMonth),
@@ -215,57 +217,153 @@ export default function HistoryPage() {
               </Card>
             </div>
 
+            {/* Per-Category Budget Breakdown */}
+            {budgets.length > 0 && (
+              <section>
+                <h3 className="text-base font-bold text-neutral-900 mb-3 flex items-center justify-between">
+                  <span>Rincian Per Kategori</span>
+                  <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                    {budgets.length} Kategori
+                  </span>
+                </h3>
+                <div className="space-y-3">
+                  {budgets.map((budget) => {
+                    const spent = budget.spentAmount;
+                    const allocated = budget.allocatedAmount;
+                    const remaining = allocated - spent;
+                    const percent = allocated > 0 ? Math.min((spent / allocated) * 100, 100) : 0;
+
+                    let progressColor = "bg-emerald-500";
+                    if (percent > 85) progressColor = "bg-rose-500";
+                    else if (percent > 65) progressColor = "bg-amber-400";
+
+                    return (
+                      <div key={budget.id} className="bg-white p-4 rounded-2xl shadow-sm border border-neutral-100">
+                        <div className="flex justify-between items-start mb-2.5">
+                          <div>
+                            <h4 className="font-semibold text-neutral-900 text-sm">{budget.category}</h4>
+                            <p className="text-[11px] text-neutral-500 font-medium mt-0.5">
+                              Sisa{" "}
+                              <span className={remaining < 0 ? "text-rose-500 font-bold" : "text-emerald-600 font-bold"}>
+                                {formatRupiah(remaining)}
+                              </span>
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-bold text-rose-600">{formatRupiah(spent)}</p>
+                            <p className="text-[10px] text-neutral-400 font-medium mt-0.5">
+                              dari {formatRupiah(allocated)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="h-2 w-full bg-neutral-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ease-out ${progressColor}`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-neutral-100">
+                          <div>
+                            <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider mb-0.5">Alokasi</p>
+                            <p className="text-xs font-bold text-neutral-700">{formatRupiah(allocated)}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider mb-0.5">Terpakai</p>
+                            <p className="text-xs font-bold text-rose-600">{formatRupiah(spent)}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider mb-0.5">Sisa</p>
+                            <p className={`text-xs font-bold ${remaining < 0 ? "text-rose-500" : "text-emerald-600"}`}>
+                              {formatRupiah(remaining)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
             {/* Expenses List */}
             <section>
-              <h3 className="text-base font-bold text-neutral-900 mb-3 flex items-center justify-between">
-                <span>Rincian Pengeluaran</span>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-base font-bold text-neutral-900">Rincian Pengeluaran</h3>
                 <span className="text-xs font-medium text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded-full">
                   {expenses.length} Trx
                 </span>
-              </h3>
+              </div>
+
+              {/* Category Filter Chips */}
+              {expenses.length > 0 && (
+                <div className="flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide">
+                  {["Semua", ...budgets.map(b => b.category)].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategoryFilter(cat)}
+                      className={`flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 ${
+                        selectedCategoryFilter === cat
+                          ? "bg-emerald-500 text-white shadow-sm"
+                          : "bg-white text-neutral-500 border border-neutral-200 hover:border-emerald-300 hover:text-emerald-600"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              )}
               
               <div className="bg-white rounded-[2rem] shadow-sm border border-neutral-100 overflow-hidden relative">
                 {expenses.length === 0 ? (
                   <div className="p-8 text-center flex flex-col items-center justify-center text-neutral-400">
                     <p className="text-sm font-medium text-neutral-500">Tidak ada pengeluaran</p>
                   </div>
-                ) : (
-                  <div className="divide-y divide-neutral-100">
-                    {expenses.map((expense) => {
-                      const budget = budgets.find(b => b.id === expense.budgetId);
-                      const expDate = expense.date && 'toDate' in expense.date 
-                        ? expense.date.toDate() 
-                        : new Date();
-                        
-                      return (
-                        <div key={expense.id} className="p-4 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center flex-shrink-0">
-                              <TrendingDown className="w-4 h-4 text-rose-600" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-neutral-900 line-clamp-1">
-                                {expense.description || budget?.category || "Pengeluaran"}
-                              </p>
-                              <div className="flex items-center gap-1.5 mt-0.5">
-                                <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
-                                  {budget?.category}
-                                </span>
-                                <span className="w-1 h-1 rounded-full bg-neutral-200" />
-                                <p className="text-[11px] text-neutral-400 font-medium">
-                                  {format(expDate, "d MMM, HH:mm", { locale: id })}
+                ) : (() => {
+                  const filtered = selectedCategoryFilter === "Semua"
+                    ? expenses
+                    : expenses.filter(e => budgets.find(b => b.id === e.budgetId)?.category === selectedCategoryFilter);
+                  return filtered.length === 0 ? (
+                    <div className="p-8 text-center flex flex-col items-center justify-center">
+                      <p className="text-sm font-medium text-neutral-400">Tidak ada pengeluaran di kategori ini</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-neutral-100">
+                      {filtered.map((expense) => {
+                        const budget = budgets.find(b => b.id === expense.budgetId);
+                        const expDate = expense.date && 'toDate' in expense.date 
+                          ? expense.date.toDate() 
+                          : new Date();
+                          
+                        return (
+                          <div key={expense.id} className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center flex-shrink-0">
+                                <TrendingDown className="w-4 h-4 text-rose-600" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold text-neutral-900 line-clamp-1">
+                                  {expense.description || budget?.category || "Pengeluaran"}
                                 </p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                                    {budget?.category}
+                                  </span>
+                                  <span className="w-1 h-1 rounded-full bg-neutral-200" />
+                                  <p className="text-[11px] text-neutral-400 font-medium">
+                                    {format(expDate, "d MMM, HH:mm", { locale: id })}
+                                  </p>
+                                </div>
                               </div>
                             </div>
+                            <p className="text-sm font-bold text-neutral-900 tracking-tight">
+                              -{formatRupiah(expense.amount).replace("Rp", "").trim()}
+                            </p>
                           </div>
-                          <p className="text-sm font-bold text-neutral-900 tracking-tight">
-                            -{formatRupiah(expense.amount).replace("Rp", "").trim()}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
               </div>
             </section>
           </>

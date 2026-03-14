@@ -335,7 +335,7 @@ export default function DashboardPage() {
                   const budget = budgets.find(b => b.id === expense.budgetId);
                   const expDate = expense.date && 'toDate' in expense.date 
                     ? expense.date.toDate() 
-                    : new Date(); // Fallback
+                    : new Date();
                     
                   return (
                     <div key={expense.id} className="p-4 flex items-center justify-between">
