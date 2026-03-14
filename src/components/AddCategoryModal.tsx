@@ -30,7 +30,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
     setIsLoading(true);
     try {
       await onAddCategory(
-        categoryName, 
+        categoryName,
         amount ? Number(amount.replace(/[^0-9]/g, "")) : 0
       );
       setOpen(false);
@@ -51,7 +51,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger 
+      <DialogTrigger
         render={
           <Button variant="outline" size="sm" className="h-7 text-xs font-medium text-emerald-600 bg-emerald-50 border-emerald-100 hover:bg-emerald-100 rounded-full px-3" />
         }
@@ -82,7 +82,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
               />
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-3">
             <div className="bg-neutral-100 p-2 rounded-lg">
               <Wallet className="w-4 h-4 text-neutral-500" />
@@ -90,7 +90,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
             <div className="flex-1">
               <Input
                 id="budgetAmount"
-                placeholder="Jatah Budget (Opsional)"
+                placeholder="Jatah Budget"
                 className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-emerald-500"
                 value={amount}
                 onChange={(e) => setAmount(formatRupiah(e.target.value))}
@@ -100,8 +100,8 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
             </div>
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-base font-medium"
             disabled={isLoading || !categoryName}
           >
