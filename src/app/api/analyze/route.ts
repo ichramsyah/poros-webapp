@@ -4,7 +4,7 @@ import { GoogleGenAI } from '@google/genai';
 export async function POST(req: Request) {
   try {
     if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ error: "Gemini API Key is not set." }, { status: 500 });
+      return NextResponse.json({ error: 'Gemini API Key is not set.' }, { status: 500 });
     }
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -66,23 +66,22 @@ Catatan penting:
 `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-lite',
+      model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
-        responseMimeType: "application/json",
-      }
+        responseMimeType: 'application/json',
+      },
     });
 
     const text = response.text;
     if (!text) {
-      throw new Error("No response from AI");
+      throw new Error('No response from AI');
     }
 
     const json = JSON.parse(text);
     return NextResponse.json(json);
-
   } catch (error) {
-    console.error("AI Analysis error:", error);
-    return NextResponse.json({ error: "Failed to generate analysis" }, { status: 500 });
+    console.error('AI Analysis error:', error);
+    return NextResponse.json({ error: 'Failed to generate analysis' }, { status: 500 });
   }
 }
