@@ -20,6 +20,10 @@ export interface UserProfile {
   email: string;
   displayName: string;
   createdAt: Timestamp;
+  placeOfBirth?: string;
+  dateOfBirth?: string; // YYYY-MM-DD
+  bio?: string;
+  targetGoal?: string;
 }
 
 export interface Budget {
@@ -47,6 +51,19 @@ export interface MonthlyIncome {
   amount: number;
 }
 
+export interface AIAnalysis {
+  id?: string;
+  userId: string;
+  monthYear: string;  // e.g. "2024-03"
+  savingRate: number; // percentage e.g. 25
+  healthScore: number; // 0-100
+  topLeaks: { category: string; message: string }[];
+  summary?: string;
+  praise: string;
+  advice: string;
+  createdAt: Timestamp;
+}
+
 export async function getUserProfile(userId: string, email: string, displayName: string) {
   const userRef = doc(db, "users", userId);
   const userSnap = await getDoc(userRef);
@@ -62,6 +79,11 @@ export async function getUserProfile(userId: string, email: string, displayName:
     return newUser;
   }
   return userSnap.data() as UserProfile;
+}
+
+export async function updateUserProfile(userId: string, data: Partial<UserProfile>) {
+  const userRef = doc(db, "users", userId);
+  await updateDoc(userRef, data);
 }
 
 export async function getMonthlyIncome(userId: string, monthYear: string): Promise<number> {
@@ -244,4 +266,30 @@ export async function resetMonthData(userId: string, monthYear: string) {
   const budgetsSnapshot = await getDocs(budgetsQuery);
   const resetBudgetPromises = budgetsSnapshot.docs.map(d => updateDoc(doc(db, "budgets", d.id), { spentAmount: 0 }));
   await Promise.all(resetBudgetPromises);
+}
+
+export async function getMonthlyAIAnalysis(userId: string, monthYear: string): Promise<AIAnalysis | null> {
+  const analysisRef = collection(db, "ai_analysis");
+  const q = query(
+    analysisRef,
+    where("userId", "==", userId),
+    where("monthYear", "==", monthYear)
+  );
+  
+  const querySnapshot = await getDocs(q);
+  if (!querySnapshot.empty) {
+    const data = querySnapshot.docs[0].data() as AIAnalysis;
+    return { id: querySnapshot.docs[0].id, ...data };
+  }
+  return null;
+}
+
+export async function saveMonthlyAIAnalysis(analysis: Omit<AIAnalysis, "id" | "createdAt">): Promise<string> {
+  const docId = `${analysis.userId}_${analysis.monthYear}`;
+  const analysisRef = doc(db, "ai_analysis", docId);
+  await setDoc(analysisRef, {
+    ...analysis,
+    createdAt: Timestamp.now()
+  });
+  return docId;
 }

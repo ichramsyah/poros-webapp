@@ -10,11 +10,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Tabung Menabung',
-  description: 'Personal finance tracker',
+  title: 'Poros',
+  description: 'Personal Life OS',
 };
 
 import { AuthProvider } from '@/context/AuthContext';
+import { BottomNav } from '@/components/BottomNav';
 
 export default function RootLayout({
   children,
@@ -24,8 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-sans antialiased text-neutral-900`}>
-        <AuthProvider>{children}</AuthProvider>
-        {/*  */}
+        <AuthProvider>
+          {children}
+          <BottomNav />
+        </AuthProvider>
       </body>
     </html>
   );

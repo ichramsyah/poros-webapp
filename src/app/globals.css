@@ -9,6 +9,17 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-poppins);
+  --color-poros-50: #f2eef4;
+  --color-poros-100: #e2d9e6;
+  --color-poros-200: #c6b2ce;
+  --color-poros-300: #a586b2;
+  --color-poros-400: #886298;
+  --color-poros-500: #6f477e;
+  --color-poros-600: #441752;
+  --color-poros-700: #3c1448;
+  --color-poros-800: #32113b;
+  --color-poros-900: #2a0f32;
+  --color-poros-950: #1a081f;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,6 +28,8 @@
     --foreground: #ededed;
   }
 }
+
+/* yang hijau ganti #441752 */
 
 body {
   background: var(--background);
