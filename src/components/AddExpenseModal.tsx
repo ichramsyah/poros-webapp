@@ -81,7 +81,7 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
         render={
           <Button
             size="icon"
-            className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all transform hover:scale-105"
+            className="fixed bottom-[104px] right-6 w-14 h-14 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] bg-poros-600 hover:bg-poros-700 text-white transition-all transform hover:-translate-y-1 z-40"
           />
         }
       >
@@ -104,7 +104,7 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
                 <Input
                   id="amount"
                   placeholder="Rp 0"
-                  className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-emerald-500"
+                  className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-poros-500"
                   value={amount}
                   onChange={(e) => setAmount(formatRupiah(e.target.value))}
                   type="text"
@@ -120,7 +120,7 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
               </div>
               <div className="flex-1">
                 <Select value={budgetId} onValueChange={(val) => setBudgetId(val || "")} required>
-                  <SelectTrigger className="h-12 border-neutral-200 focus:ring-emerald-500 bg-white">
+                  <SelectTrigger className="h-12 border-neutral-200 focus:ring-poros-500 bg-white">
                     <SelectValue placeholder="Pilih Kategori">
                       {budgetId ? budgets.find(b => b.id === budgetId)?.category : "Pilih Kategori"}
                     </SelectValue>
@@ -144,7 +144,7 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
                 <Input
                   id="description"
                   placeholder="Catatan (Opsional)"
-                  className="h-12 border-neutral-200 focus-visible:ring-emerald-500"
+                  className="h-12 border-neutral-200 focus-visible:ring-poros-500"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -159,7 +159,7 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
                 <Input
                   id="date"
                   type="date"
-                  className="h-12 border-neutral-200 focus-visible:ring-emerald-500"
+                  className="h-12 border-neutral-200 focus-visible:ring-poros-500"
                   value={dateStr}
                   onChange={(e) => setDateStr(e.target.value)}
                   required
@@ -169,7 +169,7 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
           </div>
           <Button 
             type="submit" 
-            className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-base font-medium"
+            className="w-full h-12 bg-poros-600 hover:bg-poros-700 text-white rounded-xl text-base font-medium"
             disabled={isLoading || !amount || !budgetId || !dateStr}
           >
             {isLoading ? "Menyimpan..." : "Simpan Pengeluaran"}

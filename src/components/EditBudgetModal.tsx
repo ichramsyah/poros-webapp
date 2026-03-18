@@ -54,7 +54,7 @@ export function EditBudgetModal({ budget, onUpdateBudget }: EditBudgetModalProps
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger 
-        render={<button className="text-neutral-400 hover:text-emerald-600 transition-colors p-1 cursor-pointer" />}
+        render={<button className="text-neutral-400 hover:text-poros-600 transition-colors p-1 cursor-pointer" />}
       >
         <Edit2 className="w-4 h-4" />
       </DialogTrigger>
@@ -67,14 +67,14 @@ export function EditBudgetModal({ budget, onUpdateBudget }: EditBudgetModalProps
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 pt-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-emerald-100 p-2 rounded-lg">
-              <Wallet className="w-4 h-4 text-emerald-600" />
+            <div className="bg-poros-100 p-2 rounded-lg">
+              <Wallet className="w-4 h-4 text-poros-600" />
             </div>
             <div className="flex-1">
               <Input
                 id="budgetAmount"
                 placeholder="Rp 0"
-                className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-emerald-500"
+                className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-poros-500"
                 value={amount}
                 onChange={(e) => setAmount(formatRupiah(e.target.value))}
                 type="text"
@@ -86,7 +86,7 @@ export function EditBudgetModal({ budget, onUpdateBudget }: EditBudgetModalProps
           </div>
           <Button 
             type="submit" 
-            className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-base font-medium"
+            className="w-full h-12 bg-poros-600 hover:bg-poros-700 text-white rounded-xl text-base font-medium"
             disabled={isLoading || !amount}
           >
             {isLoading ? "Menyimpan..." : "Simpan Budget"}

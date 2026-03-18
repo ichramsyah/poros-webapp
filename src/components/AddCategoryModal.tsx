@@ -53,7 +53,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="outline" size="sm" className="h-7 text-xs font-medium text-emerald-600 bg-emerald-50 border-emerald-100 hover:bg-emerald-100 rounded-full px-3" />
+          <Button variant="outline" size="sm" className="h-7 text-xs font-medium text-poros-600 bg-poros-50 border-poros-100 hover:bg-poros-100 rounded-full px-3" />
         }
       >
         <Plus className="w-3.5 h-3.5 mr-1" /> Kategori Baru
@@ -74,7 +74,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
               <Input
                 id="categoryName"
                 placeholder="Nama Kategori (Contoh: Baju)"
-                className="h-12 border-neutral-200 focus-visible:ring-emerald-500"
+                className="h-12 border-neutral-200 focus-visible:ring-poros-500"
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
                 autoFocus
@@ -91,7 +91,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
               <Input
                 id="budgetAmount"
                 placeholder="Jatah Budget"
-                className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-emerald-500"
+                className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-poros-500"
                 value={amount}
                 onChange={(e) => setAmount(formatRupiah(e.target.value))}
                 type="text"
@@ -102,7 +102,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
 
           <Button
             type="submit"
-            className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-base font-medium"
+            className="w-full h-12 bg-poros-600 hover:bg-poros-700 text-white rounded-xl text-base font-medium"
             disabled={isLoading || !categoryName}
           >
             {isLoading ? "Menyimpan..." : "Tambah Kategori"}
