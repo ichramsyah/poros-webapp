@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { LogOut, Wallet, TrendingDown, Receipt, History } from 'lucide-react';
+import { LogOut, Wallet, TrendingDown, Receipt, History, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { auth } from '@/lib/firebase';
@@ -26,6 +26,22 @@ export default function DashboardPage() {
   const [expenses, setExpenses] = useState<(Expense & { id: string })[]>([]);
   const [monthlyIncome, setMonthlyIncome] = useState<number>(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [showAmounts, setShowAmounts] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('showAmounts');
+    if (saved !== null) {
+      setShowAmounts(saved === 'true');
+    }
+  }, []);
+
+  const toggleShowAmounts = () => {
+    setShowAmounts((prev) => {
+      const next = !prev;
+      localStorage.setItem('showAmounts', String(next));
+      return next;
+    });
+  };
 
   const currentMonthYear = format(new Date(), 'yyyy-MM');
   const monthName = format(new Date(), 'MMMM yyyy', { locale: id });
@@ -165,8 +181,17 @@ export default function DashboardPage() {
             <CardContent className="p-6 relative z-10">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-poros-100 text-xs font-medium tracking-wide uppercase">Total Sisa Uang</p>
+                <button
+                  onClick={toggleShowAmounts}
+                  className="text-poros-100 hover:text-white p-1 rounded-full transition-colors focus:outline-none"
+                  aria-label={showAmounts ? "Sembunyikan nominal" : "Tampilkan nominal"}
+                >
+                  {showAmounts ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
-              <h2 className="text-3xl font-bold tracking-tight mb-4">{formatRupiah(Math.max(0, monthlyIncome - totalSpent))}</h2>
+              <h2 className="text-3xl font-bold tracking-tight mb-4">
+                {showAmounts ? formatRupiah(Math.max(0, monthlyIncome - totalSpent)) : 'Rp ••••••••'}
+              </h2>
 
               <div className="grid grid-cols-2 gap-4 mt-2">
                 <div>
@@ -174,11 +199,15 @@ export default function DashboardPage() {
                     Pendapatan
                     <SetIncomeModal currentIncome={monthlyIncome} monthName={monthName} onSetIncome={handleSetIncome} />
                   </div>
-                  <p className="text-sm font-semibold">{formatRupiah(monthlyIncome)}</p>
+                  <p className="text-sm font-semibold">
+                    {showAmounts ? formatRupiah(monthlyIncome) : 'Rp ••••••••'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-poros-100 text-[10px] uppercase font-bold tracking-wider mb-0.5">Sisa Alokasi</p>
-                  <p className="text-sm font-semibold">{formatRupiah(Math.max(0, monthlyIncome - totalAllocated))}</p>
+                  <p className="text-sm font-semibold">
+                    {showAmounts ? formatRupiah(Math.max(0, monthlyIncome - totalAllocated)) : 'Rp ••••••••'}
+                  </p>
                 </div>
               </div>
             </CardContent>
