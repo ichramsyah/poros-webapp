@@ -328,3 +328,47 @@ export async function saveMonthlyAIAnalysis(analysis: Omit<AIAnalysis, "id" | "c
   });
   return docId;
 }
+
+export interface MonthMetric {
+  monthYear: string;
+  income: number;
+  expenditure: number;
+}
+
+export async function getYearlyMetrics(userId: string, year: string): Promise<MonthMetric[]> {
+  const metricsMap = new Map<string, MonthMetric>();
+  
+  // Initialize map with all 12 months for the given year
+  for (let i = 1; i <= 12; i++) {
+    const month = i.toString().padStart(2, '0');
+    const monthYear = `${year}-${month}`;
+    metricsMap.set(monthYear, { monthYear, income: 0, expenditure: 0 });
+  }
+
+  // Fetch ALL incomes and filter in memory to avoid Firestore composite index errors
+  const incomesRef = collection(db, "income");
+  const incomesQ = query(incomesRef, where("userId", "==", userId));
+  const incomesSnap = await getDocs(incomesQ);
+  
+  incomesSnap.forEach(doc => {
+    const data = doc.data() as MonthlyIncome;
+    if (data.monthYear.startsWith(year) && metricsMap.has(data.monthYear)) {
+      metricsMap.get(data.monthYear)!.income += data.amount;
+    }
+  });
+
+  // Fetch ALL budgets and filter in memory
+  const budgetsRef = collection(db, "budgets");
+  const budgetsQ = query(budgetsRef, where("userId", "==", userId));
+  const budgetsSnap = await getDocs(budgetsQ);
+  
+  budgetsSnap.forEach(doc => {
+    const data = doc.data() as Budget;
+    if (data.monthYear.startsWith(year) && metricsMap.has(data.monthYear)) {
+      metricsMap.get(data.monthYear)!.expenditure += data.spentAmount;
+    }
+  });
+
+  // Convert map to array sorted by month (Jan to Dec)
+  return Array.from(metricsMap.values()).sort((a, b) => a.monthYear.localeCompare(b.monthYear));
+}
