@@ -127,9 +127,44 @@ export async function setMonthlyIncome(userId: string, monthYear: string, amount
 }
 
 export async function initializeMonthBudgets(userId: string, monthYear: string) {
-  // We no longer auto-initialize default categories. 
-  // Users will start with an empty state and add categories manually.
-  return;
+  // Check if budgets already exist for this month
+  const currentBudgets = await getBudgets(userId, monthYear);
+  if (currentBudgets.length > 0) {
+    return;
+  }
+
+  // Get available months
+  const availableMonths = await getAvailableMonths(userId);
+  
+  // Find the most recent previous month
+  const prevMonth = availableMonths.find(m => m < monthYear);
+  
+  if (prevMonth) {
+    // Fetch budgets from the previous month
+    const prevBudgets = await getBudgets(userId, prevMonth);
+    
+    // Check again to avoid duplicate creation due to concurrent calls (e.g., React StrictMode)
+    const checkAgain = await getBudgets(userId, monthYear);
+    if (checkAgain.length > 0) {
+      return;
+    }
+
+    // Copy each budget to the current month
+    const promises = prevBudgets.map(budget => {
+      // Create deterministic ID to ensure idempotency
+      const docId = `${userId}_${monthYear}_${budget.id}`;
+      const budgetRef = doc(db, "budgets", docId);
+      return setDoc(budgetRef, {
+        id: docId,
+        userId,
+        monthYear,
+        category: budget.category,
+        allocatedAmount: budget.allocatedAmount,
+        spentAmount: 0,
+      });
+    });
+    await Promise.all(promises);
+  }
 }
 
 export async function getBudgets(userId: string, monthYear: string): Promise<Budget[]> {
