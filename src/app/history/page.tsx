@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { format, parse } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { ArrowLeft, History, Receipt, TrendingDown } from 'lucide-react';
+import { ArrowLeft, History, Receipt, TrendingDown, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getUserProfile, getBudgets, getRecentExpenses, getAvailableMonths, getMonthlyIncome, Budget, Expense } from '@/lib/firestore';
@@ -28,6 +28,22 @@ export default function HistoryPage() {
   const [userName, setUserName] = useState<string>('');
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('Semua');
+  const [showAmounts, setShowAmounts] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('showAmounts');
+    if (saved !== null) {
+      setShowAmounts(saved === 'true');
+    }
+  }, []);
+
+  const toggleShowAmounts = () => {
+    setShowAmounts((prev) => {
+      const next = !prev;
+      localStorage.setItem('showAmounts', String(next));
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (!loading && !user) {
@@ -169,16 +185,31 @@ export default function HistoryPage() {
             {/* Quick Summary Row */}
             <Card className="rounded-[2xl] border-none shadow-sm bg-gradient-to-br from-poros-500 to-poros-700 text-white overflow-hidden mb-3">
               <CardContent className="p-5">
-                <p className="text-poros-100 text-[11px] uppercase tracking-wider font-bold mb-1">Total Sisa Uang</p>
-                <h2 className="text-2xl font-bold tracking-tight mb-3">{formatRupiah(Math.max(0, monthlyIncome - totalSpent))}</h2>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-poros-100 text-[11px] uppercase tracking-wider font-bold">Total Sisa Uang</p>
+                  <button
+                    onClick={toggleShowAmounts}
+                    className="text-poros-100 hover:text-white p-1 rounded-full transition-colors focus:outline-none"
+                    aria-label={showAmounts ? "Sembunyikan nominal" : "Tampilkan nominal"}
+                  >
+                    {showAmounts ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <h2 className="text-2xl font-bold tracking-tight mb-3">
+                  {showAmounts ? formatRupiah(Math.max(0, monthlyIncome - totalSpent)) : 'Rp ••••••••'}
+                </h2>
                 <div className="flex items-center justify-between text-sm">
                   <div>
                     <p className="text-poros-100 text-[10px] uppercase font-bold tracking-wider mb-0.5">Pendapatan</p>
-                    <p className="font-medium">{formatRupiah(monthlyIncome)}</p>
+                    <p className="font-medium">
+                      {showAmounts ? formatRupiah(monthlyIncome) : 'Rp ••••••••'}
+                    </p>
                   </div>
                   <div className="text-right">
                     <p className="text-poros-100 text-[10px] uppercase font-bold tracking-wider mb-0.5">Sisa Alokasi</p>
-                    <p className="font-medium">{formatRupiah(Math.max(0, monthlyIncome - totalAllocated))}</p>
+                    <p className="font-medium">
+                      {showAmounts ? formatRupiah(Math.max(0, monthlyIncome - totalAllocated)) : 'Rp ••••••••'}
+                    </p>
                   </div>
                 </div>
               </CardContent>
