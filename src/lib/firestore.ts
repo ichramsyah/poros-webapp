@@ -127,9 +127,44 @@ export async function setMonthlyIncome(userId: string, monthYear: string, amount
 }
 
 export async function initializeMonthBudgets(userId: string, monthYear: string) {
-  // We no longer auto-initialize default categories. 
-  // Users will start with an empty state and add categories manually.
-  return;
+  // Check if budgets already exist for this month
+  const currentBudgets = await getBudgets(userId, monthYear);
+  if (currentBudgets.length > 0) {
+    return;
+  }
+
+  // Get available months
+  const availableMonths = await getAvailableMonths(userId);
+  
+  // Find the most recent previous month
+  const prevMonth = availableMonths.find(m => m < monthYear);
+  
+  if (prevMonth) {
+    // Fetch budgets from the previous month
+    const prevBudgets = await getBudgets(userId, prevMonth);
+    
+    // Check again to avoid duplicate creation due to concurrent calls (e.g., React StrictMode)
+    const checkAgain = await getBudgets(userId, monthYear);
+    if (checkAgain.length > 0) {
+      return;
+    }
+
+    // Copy each budget to the current month
+    const promises = prevBudgets.map(budget => {
+      // Create deterministic ID to ensure idempotency
+      const docId = `${userId}_${monthYear}_${budget.id}`;
+      const budgetRef = doc(db, "budgets", docId);
+      return setDoc(budgetRef, {
+        id: docId,
+        userId,
+        monthYear,
+        category: budget.category,
+        allocatedAmount: budget.allocatedAmount,
+        spentAmount: 0,
+      });
+    });
+    await Promise.all(promises);
+  }
 }
 
 export async function getBudgets(userId: string, monthYear: string): Promise<Budget[]> {
@@ -292,4 +327,48 @@ export async function saveMonthlyAIAnalysis(analysis: Omit<AIAnalysis, "id" | "c
     createdAt: Timestamp.now()
   });
   return docId;
+}
+
+export interface MonthMetric {
+  monthYear: string;
+  income: number;
+  expenditure: number;
+}
+
+export async function getYearlyMetrics(userId: string, year: string): Promise<MonthMetric[]> {
+  const metricsMap = new Map<string, MonthMetric>();
+  
+  // Initialize map with all 12 months for the given year
+  for (let i = 1; i <= 12; i++) {
+    const month = i.toString().padStart(2, '0');
+    const monthYear = `${year}-${month}`;
+    metricsMap.set(monthYear, { monthYear, income: 0, expenditure: 0 });
+  }
+
+  // Fetch ALL incomes and filter in memory to avoid Firestore composite index errors
+  const incomesRef = collection(db, "income");
+  const incomesQ = query(incomesRef, where("userId", "==", userId));
+  const incomesSnap = await getDocs(incomesQ);
+  
+  incomesSnap.forEach(doc => {
+    const data = doc.data() as MonthlyIncome;
+    if (data.monthYear.startsWith(year) && metricsMap.has(data.monthYear)) {
+      metricsMap.get(data.monthYear)!.income += data.amount;
+    }
+  });
+
+  // Fetch ALL budgets and filter in memory
+  const budgetsRef = collection(db, "budgets");
+  const budgetsQ = query(budgetsRef, where("userId", "==", userId));
+  const budgetsSnap = await getDocs(budgetsQ);
+  
+  budgetsSnap.forEach(doc => {
+    const data = doc.data() as Budget;
+    if (data.monthYear.startsWith(year) && metricsMap.has(data.monthYear)) {
+      metricsMap.get(data.monthYear)!.expenditure += data.spentAmount;
+    }
+  });
+
+  // Convert map to array sorted by month (Jan to Dec)
+  return Array.from(metricsMap.values()).sort((a, b) => a.monthYear.localeCompare(b.monthYear));
 }

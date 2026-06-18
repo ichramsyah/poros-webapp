@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, History, User } from 'lucide-react';
+import { Home, History, User, BarChart2 } from 'lucide-react';
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -18,6 +18,9 @@ export function BottomNav() {
         </Link>
         <Link href="/history" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/history' ? 'text-poros-600' : 'text-neutral-400 hover:text-neutral-600'}`}>
           <History className={`w-6 h-6 ${pathname === '/history' ? 'fill-poros-600/20' : ''}`} />
+        </Link>
+        <Link href="/metrics" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/metrics' ? 'text-poros-600' : 'text-neutral-400 hover:text-neutral-600'}`}>
+          <BarChart2 className={`w-6 h-6 ${pathname === '/metrics' ? 'fill-poros-600/20' : ''}`} />
         </Link>
         <Link href="/profile" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/profile' ? 'text-poros-600' : 'text-neutral-400 hover:text-neutral-600'}`}>
           <User className={`w-6 h-6 ${pathname === '/profile' ? 'fill-poros-600/20' : ''}`} />
