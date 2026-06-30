@@ -58,23 +58,23 @@ export function EditBudgetModal({ budget, onUpdateBudget }: EditBudgetModalProps
       >
         <Edit2 className="w-4 h-4" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] rounded-2xl">
+      <DialogContent className="sm:max-w-[425px] rounded-2xl border border-zinc-800 bg-zinc-900 text-zinc-100">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Atur Jatah {budget.category}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-bold text-white">Atur Jatah {budget.category}</DialogTitle>
+          <DialogDescription className="text-zinc-400 text-sm">
             Masukkan nominal budget bulanan untuk kategori ini.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 pt-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-poros-100 p-2 rounded-lg">
-              <Wallet className="w-4 h-4 text-poros-600" />
+            <div className="bg-zinc-800 p-2.5 rounded-lg border border-zinc-700">
+              <Wallet className="w-4 h-4 text-poros-500" />
             </div>
             <div className="flex-1">
               <Input
                 id="budgetAmount"
                 placeholder="Rp 0"
-                className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-poros-500"
+                className="text-lg font-semibold h-12 border-zinc-800 bg-zinc-950 text-white focus-visible:ring-poros-500 rounded-xl"
                 value={amount}
                 onChange={(e) => setAmount(formatRupiah(e.target.value))}
                 type="text"
@@ -86,7 +86,7 @@ export function EditBudgetModal({ budget, onUpdateBudget }: EditBudgetModalProps
           </div>
           <Button 
             type="submit" 
-            className="w-full h-12 bg-poros-600 hover:bg-poros-700 text-white rounded-xl text-base font-medium"
+            className="w-full h-12 bg-poros-500 hover:bg-poros-600 text-black rounded-xl text-base font-bold cursor-pointer"
             disabled={isLoading || !amount}
           >
             {isLoading ? "Menyimpan..." : "Simpan Budget"}

@@ -60,31 +60,31 @@ export function SetIncomeModal({ currentIncome, monthName, onSetIncome }: SetInc
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-6 px-2 text-[10px] font-bold text-white/80 hover:text-white border border-white/20 rounded-md hover:bg-white/20 ml-2 transition-all shadow-sm"
+            className="h-5 px-1.5 text-[9px] font-bold text-zinc-400 hover:text-white border border-zinc-800 rounded-md hover:bg-zinc-800 ml-2 transition-all cursor-pointer shadow-sm"
           />
         }
       >
-        <Edit2 className="w-3.5 h-3.5 mr-1" /> Edit
+        <Edit2 className="w-3 h-3 mr-1" /> Edit
       </DialogTrigger>
-      <DialogContent className="w-[95vw] sm:max-w-[425px] p-5 sm:p-6 rounded-2xl sm:rounded-2xl">
+      <DialogContent className="w-[95vw] sm:max-w-[425px] p-5 sm:p-6 rounded-2xl sm:rounded-2xl border border-zinc-800 bg-zinc-900 text-zinc-100">
         <DialogHeader className="text-left">
-          <DialogTitle className="text-xl font-semibold">Cair Gajian? 💸</DialogTitle>
-          <DialogDescription className="text-sm pt-1.5">
-            Atur total pendapatan untuk <strong>{monthName}</strong> agar kamu bisa mantau persentase alokasi dana dan sisa uang bersih.
+          <DialogTitle className="text-xl font-bold text-white">Cair Gajian? 💸</DialogTitle>
+          <DialogDescription className="text-sm pt-1.5 text-zinc-400">
+            Atur total pendapatan untuk <strong className="text-zinc-200">{monthName}</strong> agar kamu bisa mantau persentase alokasi dana dan sisa uang bersih.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 pt-3">
           <div className="space-y-3">
-            <Label htmlFor="income" className="text-sm font-semibold text-neutral-700">Total Pendapatan</Label>
+            <Label htmlFor="income" className="text-sm font-semibold text-zinc-300">Total Pendapatan</Label>
             <div className="flex items-center space-x-3">
-              <div className="bg-poros-50 p-2.5 rounded-xl border border-poros-100">
-                <Wallet className="w-5 h-5 text-poros-600" />
+              <div className="bg-zinc-800 p-2.5 rounded-xl border border-zinc-700">
+                <Wallet className="w-5 h-5 text-poros-500" />
               </div>
               <div className="flex-1">
                 <Input
                   id="income"
                   placeholder="Rp 0"
-                  className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-poros-500 rounded-xl"
+                  className="text-lg font-semibold h-12 border-zinc-800 bg-zinc-950 text-white focus-visible:ring-poros-500 rounded-xl"
                   value={amount}
                   onChange={(e) => setAmount(formatRupiah(e.target.value))}
                   type="text"
@@ -97,7 +97,7 @@ export function SetIncomeModal({ currentIncome, monthName, onSetIncome }: SetInc
           </div>
           <Button 
             type="submit" 
-            className="w-full h-12 bg-poros-600 hover:bg-poros-700 text-white rounded-xl text-base font-medium"
+            className="w-full h-12 bg-poros-500 hover:bg-poros-600 text-black rounded-xl text-base font-bold cursor-pointer"
             disabled={isLoading || !amount}
           >
             {isLoading ? "Menyimpan..." : "Simpan Pendapatan"}

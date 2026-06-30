@@ -5,9 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, Line } from 'recharts';
+import { Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, Line } from 'recharts';
 import { getYearlyMetrics, MonthMetric } from '@/lib/firestore';
-import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function MetricsPage() {
@@ -49,7 +48,7 @@ export default function MetricsPage() {
 
   if (loading || !user || isLoadingData) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-50">
+      <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="w-8 h-8 border-4 border-poros-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -67,10 +66,10 @@ export default function MetricsPage() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-neutral-100 shadow-lg rounded-xl text-xs">
-          <p className="font-bold text-neutral-900 mb-2">{label}</p>
+        <div className="bg-zinc-950 p-3 border border-zinc-800 shadow-lg rounded-xl text-xs">
+          <p className="font-bold text-white mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }} className="font-medium mt-1">
+            <p key={index} style={{ color: entry.name === 'Pendapatan' ? '#10b981' : entry.name === 'Pengeluaran' ? '#a1a1aa' : '#ffffff' }} className="font-medium mt-1">
               {entry.name}: {formatRupiah(entry.value)}
             </p>
           ))}
@@ -95,81 +94,74 @@ export default function MetricsPage() {
   const netSavings = totalIncome - totalExpenditure;
 
   return (
-    <div className="min-h-screen bg-neutral-50 pb-28">
-      <main className="px-5 pt-12 space-y-6 max-w-md mx-auto">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-2xl font-bold text-neutral-900">Metrik Tahunan</h1>
+    <div className="min-h-screen bg-black text-zinc-100 pb-32">
+      <main className="px-6 pt-16 space-y-8 max-w-md mx-auto">
+        <div className="flex items-center justify-between border-b border-zinc-900 pb-4">
+          <h1 className="text-xl font-bold tracking-tight text-white uppercase tracking-wider">Metrik Tahunan</h1>
 
           <Select value={selectedYear} onValueChange={(val) => { if (val) setSelectedYear(val); }}>
-            <SelectTrigger className="w-28 bg-white border-none shadow-sm rounded-xl font-medium">
+            <SelectTrigger className="w-24 h-9 bg-zinc-950 border border-zinc-900 shadow-sm rounded-xl font-medium text-xs text-zinc-300 cursor-pointer">
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
             <SelectContent>
               {availableYears.map(year => (
-                <SelectItem key={year} value={year}>{year}</SelectItem>
+                <SelectItem key={year} value={year} className="cursor-pointer text-xs">{year}</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="rounded-[2rem] border-none shadow-sm bg-white overflow-hidden">
-            <CardContent className="p-5">
-              <p className="text-neutral-500 text-[10px] uppercase font-bold tracking-wider mb-1">Total Pendapatan</p>
-              <h2 className="text-lg font-bold tracking-tight text-poros-600">{formatRupiah(totalIncome)}</h2>
-            </CardContent>
-          </Card>
-          <Card className="rounded-[2rem] border-none shadow-sm bg-white overflow-hidden">
-            <CardContent className="p-5">
-              <p className="text-neutral-500 text-[10px] uppercase font-bold tracking-wider mb-1">Total Pengeluaran</p>
-              <h2 className="text-lg font-bold tracking-tight text-poros-400">{formatRupiah(totalExpenditure)}</h2>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Flat Summary Columns */}
+        <section className="grid grid-cols-2 py-2 border-b border-zinc-900">
+          <div className="pr-4 border-r border-zinc-900">
+            <p className="text-zinc-500 text-[9px] uppercase font-bold tracking-wider mb-1">Total Masuk</p>
+            <h2 className="text-xl font-semibold text-poros-500 font-mono">{formatRupiah(totalIncome)}</h2>
+          </div>
+          <div className="pl-4">
+            <p className="text-zinc-500 text-[9px] uppercase font-bold tracking-wider mb-1">Total Keluar</p>
+            <h2 className="text-xl font-semibold text-zinc-400 font-mono">{formatRupiah(totalExpenditure)}</h2>
+          </div>
+        </section>
 
-        <Card className="rounded-[2rem] border-none shadow-sm bg-white overflow-hidden">
-          <CardContent className="p-5">
-            <p className="text-neutral-500 text-[10px] uppercase font-bold tracking-wider mb-1">Total Tabungan Bersih</p>
-            <h2 className={`text-2xl font-bold tracking-tight ${netSavings >= 0 ? 'text-poros-600' : 'text-red-500'}`}>
-              {formatRupiah(netSavings)}
-            </h2>
-          </CardContent>
-        </Card>
+        <section className="py-2 border-b border-zinc-900">
+          <p className="text-zinc-500 text-[9px] uppercase font-bold tracking-wider mb-1">Total Tabungan Bersih</p>
+          <h2 className={`text-2xl font-semibold font-mono ${netSavings >= 0 ? 'text-white' : 'text-rose-500'}`}>
+            {formatRupiah(netSavings)}
+          </h2>
+        </section>
 
         {/* Chart Section */}
-        <div className="bg-white p-5 rounded-[2rem] shadow-sm border border-neutral-100">
-          <h3 className="text-sm font-bold text-neutral-900 mb-6">Grafik Arus Kas ({selectedYear})</h3>
+        <section className="border border-zinc-900 bg-zinc-950/20 p-5 rounded-2xl">
+          <h3 className="text-xs uppercase font-bold tracking-wider text-zinc-400 mb-6">Grafik Arus Kas ({selectedYear})</h3>
 
-          <div className="h-[300px] w-full -ml-4">
+          <div className="h-[280px] w-full -ml-4">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#18181b" />
                 <XAxis
                   dataKey="monthName"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fill: '#a3a3a3' }}
+                  tick={{ fontSize: 9, fill: '#71717a' }}
                   dy={10}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fill: '#a3a3a3' }}
+                  tick={{ fontSize: 9, fill: '#71717a' }}
                   tickFormatter={(value) => new Intl.NumberFormat('id-ID', { notation: "compact", compactDisplay: "short" }).format(value)}
                   dx={-10}
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f5f5f5' }} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', paddingTop: '20px' }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#09090b', opacity: 0.5 }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '9px', paddingTop: '20px' }} />
 
-                <Bar dataKey="income" name="Pendapatan" fill="#441752" radius={[4, 4, 0, 0]} maxBarSize={30} />
-                <Bar dataKey="expenditure" name="Pengeluaran" fill="#c6b2ce" radius={[4, 4, 0, 0]} maxBarSize={30} />
-                <Line type="monotone" dataKey="Netto" name="Bersih" stroke="#171717" strokeWidth={2} dot={{ r: 3 }} />
+                <Bar dataKey="income" name="Pendapatan" fill="#10b981" radius={[3, 3, 0, 0]} maxBarSize={20} />
+                <Bar dataKey="expenditure" name="Pengeluaran" fill="#27272a" radius={[3, 3, 0, 0]} maxBarSize={20} />
+                <Line type="monotone" dataKey="Netto" name="Bersih" stroke="#ffffff" strokeWidth={1.5} dot={{ r: 2 }} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
-        </div>
-
+        </section>
       </main>
     </div>
   );

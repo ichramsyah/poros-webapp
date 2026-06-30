@@ -81,30 +81,30 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
         render={
           <Button
             size="icon"
-            className="fixed bottom-[104px] right-6 w-14 h-14 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] bg-poros-600 hover:bg-poros-700 text-white transition-all transform hover:-translate-y-1 z-40"
+            className="fixed bottom-[104px] right-6 w-14 h-14 rounded-full shadow-[0_8px_30px_rgba(16,185,129,0.3)] bg-poros-500 hover:bg-poros-600 text-black transition-all transform hover:-translate-y-1 z-40 cursor-pointer"
           />
         }
       >
         <Plus className="w-6 h-6" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] rounded-2xl">
+      <DialogContent className="sm:max-w-[425px] rounded-2xl border border-zinc-800 bg-zinc-900 text-zinc-100">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Tambah Pengeluaran</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-bold text-white">Tambah Pengeluaran</DialogTitle>
+          <DialogDescription className="text-zinc-400 text-sm">
             Catat detail pengeluaran barumu di bawah ini.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 pt-4">
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="bg-neutral-100 p-2 rounded-lg">
-                <Wallet className="w-4 h-4 text-neutral-500" />
+              <div className="bg-zinc-800 p-2.5 rounded-lg border border-zinc-700">
+                <Wallet className="w-4 h-4 text-zinc-400" />
               </div>
               <div className="flex-1">
                 <Input
                   id="amount"
                   placeholder="Rp 0"
-                  className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-poros-500"
+                  className="text-lg font-semibold h-12 border-zinc-800 bg-zinc-950 text-white focus-visible:ring-poros-500 rounded-xl"
                   value={amount}
                   onChange={(e) => setAmount(formatRupiah(e.target.value))}
                   type="text"
@@ -115,12 +115,12 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="bg-neutral-100 p-2 rounded-lg">
-                <Tag className="w-4 h-4 text-neutral-500" />
+              <div className="bg-zinc-800 p-2.5 rounded-lg border border-zinc-700">
+                <Tag className="w-4 h-4 text-zinc-400" />
               </div>
               <div className="flex-1">
                 <Select value={budgetId} onValueChange={(val) => setBudgetId(val || "")} required>
-                  <SelectTrigger className="h-12 border-neutral-200 focus:ring-poros-500 bg-white">
+                  <SelectTrigger className="h-12 border-zinc-800 focus:ring-poros-500 bg-zinc-950 text-zinc-100 rounded-xl cursor-pointer">
                     <SelectValue placeholder="Pilih Kategori">
                       {budgetId ? budgets.find(b => b.id === budgetId)?.category : "Pilih Kategori"}
                     </SelectValue>
@@ -137,14 +137,14 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
             </div>
 
             <div className="flex items-start space-x-3">
-              <div className="bg-neutral-100 p-2 rounded-lg mt-1">
-                <AlignLeft className="w-4 h-4 text-neutral-500" />
+              <div className="bg-zinc-800 p-2.5 rounded-lg border border-zinc-700 mt-1">
+                <AlignLeft className="w-4 h-4 text-zinc-400" />
               </div>
               <div className="flex-1">
                 <Input
                   id="description"
                   placeholder="Catatan (Opsional)"
-                  className="h-12 border-neutral-200 focus-visible:ring-poros-500"
+                  className="h-12 border-zinc-800 bg-zinc-950 text-white focus-visible:ring-poros-500 rounded-xl"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -152,14 +152,14 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
             </div>
 
             <div className="flex items-center space-x-3">
-              <div className="bg-neutral-100 p-2 rounded-lg">
-                <Calendar className="w-4 h-4 text-neutral-500" />
+              <div className="bg-zinc-800 p-2.5 rounded-lg border border-zinc-700">
+                <Calendar className="w-4 h-4 text-zinc-400" />
               </div>
               <div className="flex-1">
                 <Input
                   id="date"
                   type="date"
-                  className="h-12 border-neutral-200 focus-visible:ring-poros-500"
+                  className="h-12 border-zinc-800 bg-zinc-950 text-white focus-visible:ring-poros-500 rounded-xl cursor-pointer"
                   value={dateStr}
                   onChange={(e) => setDateStr(e.target.value)}
                   required
@@ -169,7 +169,7 @@ export function AddExpenseModal({ budgets, onAddExpense }: AddExpenseModalProps)
           </div>
           <Button 
             type="submit" 
-            className="w-full h-12 bg-poros-600 hover:bg-poros-700 text-white rounded-xl text-base font-medium"
+            className="w-full h-12 bg-poros-500 hover:bg-poros-600 text-black rounded-xl text-base font-bold cursor-pointer"
             disabled={isLoading || !amount || !budgetId || !dateStr}
           >
             {isLoading ? "Menyimpan..." : "Simpan Pengeluaran"}

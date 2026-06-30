@@ -53,28 +53,28 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="outline" size="sm" className="h-7 text-xs font-medium text-poros-600 bg-poros-50 border-poros-100 hover:bg-poros-100 rounded-full px-3" />
+          <Button variant="outline" size="sm" className="h-7 text-xs font-semibold text-poros-500 bg-poros-100/10 border border-poros-100/20 hover:bg-poros-100/20 rounded-full px-3 cursor-pointer" />
         }
       >
         <Plus className="w-3.5 h-3.5 mr-1" /> Kategori Baru
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] rounded-2xl">
+      <DialogContent className="sm:max-w-[425px] rounded-2xl border border-zinc-800 bg-zinc-900 text-zinc-100">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Kategori Baru</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-bold text-white">Kategori Baru</DialogTitle>
+          <DialogDescription className="text-zinc-400 text-sm">
             Buat kategori budget baru untuk bulan ini.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 pt-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-neutral-100 p-2 rounded-lg">
-              <Tag className="w-4 h-4 text-neutral-500" />
+            <div className="bg-zinc-800 p-2.5 rounded-lg border border-zinc-700">
+              <Tag className="w-4 h-4 text-zinc-400" />
             </div>
             <div className="flex-1">
               <Input
                 id="categoryName"
                 placeholder="Nama Kategori (Contoh: Baju)"
-                className="h-12 border-neutral-200 focus-visible:ring-poros-500"
+                className="h-12 border-zinc-800 bg-zinc-950 text-white focus-visible:ring-poros-500 rounded-xl"
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
                 autoFocus
@@ -84,14 +84,14 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="bg-neutral-100 p-2 rounded-lg">
-              <Wallet className="w-4 h-4 text-neutral-500" />
+            <div className="bg-zinc-800 p-2.5 rounded-lg border border-zinc-700">
+              <Wallet className="w-4 h-4 text-zinc-400" />
             </div>
             <div className="flex-1">
               <Input
                 id="budgetAmount"
                 placeholder="Jatah Budget"
-                className="text-lg font-medium h-12 border-neutral-200 focus-visible:ring-poros-500"
+                className="text-lg font-semibold h-12 border-zinc-800 bg-zinc-950 text-white focus-visible:ring-poros-500 rounded-xl"
                 value={amount}
                 onChange={(e) => setAmount(formatRupiah(e.target.value))}
                 type="text"
@@ -102,7 +102,7 @@ export function AddCategoryModal({ onAddCategory }: AddCategoryModalProps) {
 
           <Button
             type="submit"
-            className="w-full h-12 bg-poros-600 hover:bg-poros-700 text-white rounded-xl text-base font-medium"
+            className="w-full h-12 bg-poros-500 hover:bg-poros-600 text-black rounded-xl text-base font-bold cursor-pointer"
             disabled={isLoading || !categoryName}
           >
             {isLoading ? "Menyimpan..." : "Tambah Kategori"}

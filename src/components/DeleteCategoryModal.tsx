@@ -42,17 +42,17 @@ export function DeleteCategoryModal({ budget, onDeleteCategory }: DeleteCategory
       >
         <Trash2 className="w-4 h-4" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px] rounded-2xl">
+      <DialogContent className="sm:max-w-[400px] rounded-2xl border border-zinc-800 bg-zinc-900 text-zinc-100">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-rose-600 flex items-center gap-2">
+          <DialogTitle className="text-xl font-bold text-rose-500 flex items-center gap-2">
             Hapus Kategori
           </DialogTitle>
-          <DialogDescription className="text-base pt-2">
-            Apakah kamu yakin ingin menghapus kategori <strong className="text-neutral-900">{budget.category}</strong>?
+          <DialogDescription className="text-base pt-2 text-zinc-400">
+            Apakah kamu yakin ingin menghapus kategori <strong className="text-white">{budget.category}</strong>?
           </DialogDescription>
         </DialogHeader>
         <div className="py-2">
-          <p className="text-sm text-neutral-500 bg-rose-50 p-3 rounded-xl border border-rose-100">
+          <p className="text-sm text-rose-300 bg-rose-950/10 p-3 rounded-xl border border-rose-900/20">
             <strong>Peringatan:</strong> Menghapus kategori ini tidak akan menghapus riwayat transaksinya, tetapi kategori ini akan hilang dari laporan bulan ini.
           </p>
         </div>
@@ -60,7 +60,7 @@ export function DeleteCategoryModal({ budget, onDeleteCategory }: DeleteCategory
           <Button 
             variant="outline" 
             onClick={() => setOpen(false)}
-            className="flex-1 rounded-xl h-11"
+            className="flex-1 rounded-xl h-11 border-zinc-800 bg-zinc-950 text-zinc-300 hover:bg-zinc-900 cursor-pointer"
             disabled={isLoading}
           >
             Batal
@@ -68,7 +68,7 @@ export function DeleteCategoryModal({ budget, onDeleteCategory }: DeleteCategory
           <Button 
             variant="destructive" 
             onClick={handleDelete}
-            className="flex-1 rounded-xl h-11 bg-rose-600 hover:bg-rose-700"
+            className="flex-1 rounded-xl h-11 bg-rose-500 hover:bg-rose-600 text-white cursor-pointer"
             disabled={isLoading}
           >
             {isLoading ? "Menghapus..." : "Ya, Hapus"}

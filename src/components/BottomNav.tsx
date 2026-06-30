@@ -11,21 +11,22 @@ export function BottomNav() {
   if (pathname === '/login') return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)]">
-      <div className="bg-white max-w-[80%] mx-auto px-8 h-16 flex items-center justify-between pb-[env(safe-area-inset-bottom)] rounded-full mb-4">
-        <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-poros-600' : 'text-neutral-400 hover:text-neutral-600'}`}>
-          <Home className={`w-6 h-6 ${pathname === '/' ? 'fill-poros-600/20' : ''}`} />
+    <div className="fixed bottom-0 left-0 right-0 z-50">
+      <div className="bg-zinc-950/80 backdrop-blur-lg border border-zinc-900 max-w-[65%] mx-auto px-6 h-12 flex items-center justify-between rounded-full mb-6 shadow-2xl">
+        <Link href="/" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/' ? 'text-poros-500' : 'text-zinc-600 hover:text-zinc-400'}`}>
+          <Home className={`w-5 h-5 ${pathname === '/' ? 'fill-poros-500/10' : ''}`} />
         </Link>
-        <Link href="/history" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/history' ? 'text-poros-600' : 'text-neutral-400 hover:text-neutral-600'}`}>
-          <History className={`w-6 h-6 ${pathname === '/history' ? 'fill-poros-600/20' : ''}`} />
+        <Link href="/history" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/history' ? 'text-poros-500' : 'text-zinc-600 hover:text-zinc-400'}`}>
+          <History className={`w-5 h-5 ${pathname === '/history' ? 'fill-poros-500/10' : ''}`} />
         </Link>
-        <Link href="/metrics" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/metrics' ? 'text-poros-600' : 'text-neutral-400 hover:text-neutral-600'}`}>
-          <BarChart2 className={`w-6 h-6 ${pathname === '/metrics' ? 'fill-poros-600/20' : ''}`} />
+        <Link href="/metrics" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/metrics' ? 'text-poros-500' : 'text-zinc-600 hover:text-zinc-400'}`}>
+          <BarChart2 className={`w-5 h-5 ${pathname === '/metrics' ? 'fill-poros-500/10' : ''}`} />
         </Link>
-        <Link href="/profile" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/profile' ? 'text-poros-600' : 'text-neutral-400 hover:text-neutral-600'}`}>
-          <User className={`w-6 h-6 ${pathname === '/profile' ? 'fill-poros-600/20' : ''}`} />
+        <Link href="/profile" className={`flex flex-col items-center gap-1 transition-colors ${pathname === '/profile' ? 'text-poros-500' : 'text-zinc-600 hover:text-zinc-400'}`}>
+          <User className={`w-5 h-5 ${pathname === '/profile' ? 'fill-poros-500/10' : ''}`} />
         </Link>
       </div>
     </div>
+
   );
 }

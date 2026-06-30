@@ -5,11 +5,9 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { format, parse } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { ArrowLeft, History, Receipt, TrendingDown, Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Receipt, TrendingDown, Eye, EyeOff } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getUserProfile, getBudgets, getRecentExpenses, getAvailableMonths, getMonthlyIncome, Budget, Expense } from '@/lib/firestore';
-import { Card, CardContent } from '@/components/ui/card';
 import { AiAnalysisCard } from '@/components/AiAnalysisCard';
 
 export default function HistoryPage() {
@@ -114,7 +112,7 @@ export default function HistoryPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-neutral-50">
+      <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="w-8 h-8 border-4 border-poros-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -138,17 +136,17 @@ export default function HistoryPage() {
   const totalSpent = budgets.reduce((acc, b) => acc + b.spentAmount, 0);
 
   return (
-    <div className="min-h-screen bg-neutral-50 pb-20">
+    <div className="min-h-screen bg-black text-zinc-100 pb-32">
       {/* Header */}
-      <header className="bg-white px-5 pt-8 pb-5 sticky top-0 z-40 border-b border-neutral-100 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center gap-2">Riwayat Bulanan</h1>
+      <header className="bg-black/90 backdrop-blur-md px-6 pt-12 pb-5 sticky top-0 z-40 border-b border-zinc-900 flex flex-col gap-4 max-w-md mx-auto">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-white uppercase tracking-wider">Riwayat Bulanan</h1>
         </div>
 
         {/* Month Selector */}
         {availableMonths.length > 0 ? (
           <Select value={selectedMonth} onValueChange={(val) => setSelectedMonth(val || '')}>
-            <SelectTrigger className="w-full h-12 bg-neutral-50 border-neutral-200 rounded-xl font-medium focus:ring-poros-500 text-base">
+            <SelectTrigger className="w-full h-11 bg-zinc-950 border-zinc-900 rounded-xl font-medium focus:ring-poros-500 text-sm text-zinc-100 cursor-pointer">
               <SelectValue placeholder="Pilih Bulan">{formatMonthDisplay(selectedMonth)}</SelectValue>
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
@@ -160,124 +158,107 @@ export default function HistoryPage() {
             </SelectContent>
           </Select>
         ) : (
-          <div className="h-12 bg-neutral-100 rounded-xl flex items-center px-4 text-neutral-400 font-medium text-sm border border-neutral-200">Belum ada riwayat tercatat</div>
+          <div className="h-11 bg-zinc-950 rounded-xl flex items-center px-4 text-zinc-500 font-medium text-xs border border-zinc-900">Belum ada riwayat tercatat</div>
         )}
       </header>
 
-      <main className="px-5 mt-6 space-y-6 max-w-md mx-auto">
+      <main className="px-6 mt-6 space-y-8 max-w-md mx-auto">
         {isLoadingData ? (
           <div className="flex justify-center py-10">
-            <div className="w-6 h-6 border-3 border-poros-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-poros-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : budgets.length === 0 && expenses.length === 0 ? (
           <div className="text-center py-12 px-4">
-            <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Receipt className="w-8 h-8 text-neutral-300" />
+            <div className="w-16 h-16 bg-zinc-950 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-900">
+              <Receipt className="w-6 h-6 text-zinc-650" />
             </div>
-            <h3 className="text-lg font-bold text-neutral-800 mb-1">Data Kosong</h3>
-            <p className="text-neutral-500 text-sm">Tidak ada catatan budget atau pengeluaran di {formatMonthDisplay(selectedMonth)}.</p>
+            <h3 className="text-sm font-bold text-zinc-300 mb-1">Data Kosong</h3>
+            <p className="text-zinc-550 text-xs">Tidak ada catatan budget atau pengeluaran di {formatMonthDisplay(selectedMonth)}.</p>
           </div>
         ) : (
           <>
             {/* AI Analysis Card */}
             {user && <AiAnalysisCard userId={user.uid} monthYear={selectedMonth} income={monthlyIncome} totalSpent={totalSpent} budgets={budgets} age={userAge} bio={userBio} targetGoal={userTargetGoal} userName={userName} />}
 
-            {/* Quick Summary Row */}
-            <Card className="rounded-[2xl] border-none shadow-sm bg-gradient-to-br from-poros-500 to-poros-700 text-white overflow-hidden mb-3">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-poros-100 text-[11px] uppercase tracking-wider font-bold">Total Sisa Uang</p>
-                  <button
-                    onClick={toggleShowAmounts}
-                    className="text-poros-100 hover:text-white p-1 rounded-full transition-colors focus:outline-none"
-                    aria-label={showAmounts ? "Sembunyikan nominal" : "Tampilkan nominal"}
-                  >
-                    {showAmounts ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                <h2 className="text-2xl font-bold tracking-tight mb-3">
-                  {showAmounts ? formatRupiah(Math.max(0, monthlyIncome - totalSpent)) : 'Rp ••••••••'}
-                </h2>
-                <div className="flex items-center justify-between text-sm">
-                  <div>
-                    <p className="text-poros-100 text-[10px] uppercase font-bold tracking-wider mb-0.5">Pendapatan</p>
-                    <p className="font-medium">
-                      {showAmounts ? formatRupiah(monthlyIncome) : 'Rp ••••••••'}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-poros-100 text-[10px] uppercase font-bold tracking-wider mb-0.5">Sisa Alokasi</p>
-                    <p className="font-medium">
-                      {showAmounts ? formatRupiah(Math.max(0, monthlyIncome - totalAllocated)) : 'Rp ••••••••'}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Clean Balance Widget */}
+            <section className="py-6 border-b border-zinc-900 relative">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-zinc-500 text-[10px] font-bold tracking-wider uppercase">Sisa Uang</p>
+                <button
+                  onClick={toggleShowAmounts}
+                  className="text-zinc-500 hover:text-white p-1 rounded-full transition-colors focus:outline-none cursor-pointer"
+                  aria-label={showAmounts ? "Sembunyikan nominal" : "Tampilkan nominal"}
+                >
+                  {showAmounts ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+              <h2 className="text-3xl font-light tracking-tight mb-6 text-white font-mono">
+                {showAmounts ? formatRupiah(Math.max(0, monthlyIncome - totalSpent)) : 'Rp ••••••••'}
+              </h2>
 
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <Card className="rounded-2xl border-none shadow-sm bg-white overflow-hidden">
-                <CardContent className="p-4">
-                  <p className="text-neutral-500 text-[11px] uppercase tracking-wider font-bold mb-1">Total Alokasi</p>
-                  <h2 className="text-lg font-bold tracking-tight text-neutral-900">{formatRupiah(totalAllocated)}</h2>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl border-none shadow-sm bg-white overflow-hidden">
-                <CardContent className="p-4">
-                  <p className="text-neutral-500 text-[11px] uppercase tracking-wider font-bold mb-1">Terpakai</p>
-                  <h2 className="text-lg font-bold tracking-tight text-poros-600">{formatRupiah(totalSpent)}</h2>
-                </CardContent>
-              </Card>
-            </div>
+              <div className="grid grid-cols-2 gap-6 pt-4 border-t border-zinc-950">
+                <div>
+                  <p className="text-zinc-500 text-[9px] uppercase font-bold tracking-wider mb-1">Pendapatan</p>
+                  <p className="text-sm font-semibold text-zinc-300">
+                    {showAmounts ? formatRupiah(monthlyIncome) : 'Rp ••••••••'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-zinc-500 text-[9px] uppercase font-bold tracking-wider mb-1">Sisa Alokasi</p>
+                  <p className="text-sm font-semibold text-zinc-300">
+                    {showAmounts ? formatRupiah(Math.max(0, monthlyIncome - totalAllocated)) : 'Rp ••••••••'}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* Flat Summary Row */}
+            <section className="grid grid-cols-2 py-2 border-b border-zinc-900">
+              <div className="pr-4 border-r border-zinc-900">
+                <p className="text-zinc-500 text-[9px] uppercase font-bold tracking-wider mb-1">Terpakai</p>
+                <h2 className="text-xl font-semibold text-poros-500 font-mono">{formatRupiah(totalSpent)}</h2>
+              </div>
+              <div className="pl-4">
+                <p className="text-zinc-500 text-[9px] uppercase font-bold tracking-wider mb-1">Alokasi</p>
+                <h2 className="text-xl font-semibold text-white font-mono">{formatRupiah(totalAllocated)}</h2>
+              </div>
+            </section>
 
             {/* Per-Category Budget Breakdown */}
             {budgets.length > 0 && (
               <section>
-                <h3 className="text-base font-bold text-neutral-900 mb-3 flex items-center justify-between">
-                  <span>Rincian Per Kategori</span>
-                  <span className="text-xs font-medium text-poros-600 bg-poros-50 px-2.5 py-0.5 rounded-full">{budgets.length} Kategori</span>
-                </h3>
-                <div className="space-y-3">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xs uppercase font-bold tracking-wider text-zinc-400">Rincian Per Kategori</h3>
+                  <span className="text-[10px] font-bold text-poros-500 bg-poros-100 border border-poros-200 px-2 py-0.5 rounded-md">{budgets.length}</span>
+                </div>
+                <div className="divide-y divide-zinc-900 border-t border-b border-zinc-900">
                   {budgets.map((budget) => {
                     const spent = budget.spentAmount;
                     const allocated = budget.allocatedAmount;
                     const remaining = allocated - spent;
                     const percent = allocated > 0 ? Math.min((spent / allocated) * 100, 100) : 0;
 
-                    let progressColor = 'bg-poros-300';
-                    if (percent > 85) progressColor = 'bg-poros-500';
-                    else if (percent > 65) progressColor = 'bg-poros-400';
+                    let progressColor = 'bg-zinc-800';
+                    if (percent > 85) progressColor = 'bg-rose-500';
+                    else if (percent > 65) progressColor = 'bg-amber-500';
+                    else if (percent > 0) progressColor = 'bg-poros-500';
 
                     return (
-                      <div key={budget.id} className="bg-white p-4 rounded-2xl shadow-sm border border-neutral-100">
-                        <div className="flex justify-between items-start mb-2.5">
+                      <div key={budget.id} className="py-4 flex flex-col gap-2.5">
+                        <div className="flex justify-between items-start">
                           <div>
-                            <h4 className="font-semibold text-neutral-900 text-sm">{budget.category}</h4>
-                            <p className="text-[11px] text-neutral-500 font-medium mt-0.5">
-                              Sisa <span className={remaining < 0 ? 'text-poros-600 font-bold' : 'text-poros-600 font-bold'}>{formatRupiah(remaining)}</span>
+                            <h4 className="font-semibold text-zinc-200 text-sm">{budget.category}</h4>
+                            <p className="text-[11px] text-zinc-500 mt-0.5">
+                              Sisa <span className="text-poros-500 font-semibold">{formatRupiah(remaining)}</span>
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-bold text-poros-600">{formatRupiah(spent)}</p>
-                            <p className="text-[10px] text-neutral-400 font-medium mt-0.5">dari {formatRupiah(allocated)}</p>
+                            <p className="text-sm font-semibold text-white font-mono">{formatRupiah(spent)}</p>
+                            <p className="text-[10px] text-zinc-500 mt-0.5">dari {formatRupiah(allocated)}</p>
                           </div>
                         </div>
-                        <div className="h-2 w-full bg-neutral-100 rounded-full overflow-hidden">
+                        <div className="h-[2px] w-full bg-zinc-900 rounded-full overflow-hidden">
                           <div className={`h-full rounded-full transition-all duration-500 ease-out ${progressColor}`} style={{ width: `${percent}%` }} />
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-neutral-100">
-                          <div>
-                            <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider mb-0.5">Alokasi</p>
-                            <p className="text-xs font-bold text-neutral-700">{formatRupiah(allocated)}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider mb-0.5">Terpakai</p>
-                            <p className="text-xs font-bold text-poros-600">{formatRupiah(spent)}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-wider mb-0.5">Sisa</p>
-                            <p className={`text-xs font-bold ${remaining < 0 ? 'text-poros-600' : 'text-poros-600'}`}>{formatRupiah(remaining)}</p>
-                          </div>
                         </div>
                       </div>
                     );
@@ -288,20 +269,22 @@ export default function HistoryPage() {
 
             {/* Expenses List */}
             <section>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-bold text-neutral-900">Rincian Pengeluaran</h3>
-                <span className="text-xs font-medium text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded-full">{expenses.length} Trx</span>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xs uppercase font-bold tracking-wider text-zinc-400">Rincian Pengeluaran</h3>
+                <span className="text-[10px] font-bold text-zinc-500 bg-zinc-900 px-2 py-0.5 rounded-md">{expenses.length}</span>
               </div>
 
               {/* Category Filter Chips */}
               {expenses.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto pb-2 mb-3 scrollbar-hide">
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-1 scrollbar-hide">
                   {['Semua', ...budgets.map((b) => b.category)].map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setSelectedCategoryFilter(cat)}
-                      className={`flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 ${
-                        selectedCategoryFilter === cat ? 'bg-poros-500 text-white shadow-sm' : 'bg-white text-neutral-500 border border-neutral-200 hover:border-poros-300 hover:text-poros-600'
+                      className={`flex-shrink-0 text-[11px] font-semibold px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer ${
+                        selectedCategoryFilter === cat
+                          ? 'bg-poros-500/10 text-poros-500 border border-poros-500/20'
+                          : 'bg-zinc-950 text-zinc-500 border border-zinc-900 hover:text-white'
                       }`}
                     >
                       {cat}
@@ -310,44 +293,42 @@ export default function HistoryPage() {
                 </div>
               )}
 
-              <div className="bg-white rounded-[2rem] shadow-sm border border-neutral-100 overflow-hidden relative">
+              <div className="divide-y divide-zinc-900 border-t border-b border-zinc-900">
                 {expenses.length === 0 ? (
-                  <div className="p-8 text-center flex flex-col items-center justify-center text-neutral-400">
-                    <p className="text-sm font-medium text-neutral-500">Tidak ada pengeluaran</p>
+                  <div className="py-8 text-center flex flex-col items-center justify-center text-zinc-650">
+                    <p className="text-xs font-semibold text-zinc-400">Tidak ada pengeluaran</p>
                   </div>
                 ) : (
                   (() => {
                     const filtered = selectedCategoryFilter === 'Semua' ? expenses : expenses.filter((e) => budgets.find((b) => b.id === e.budgetId)?.category === selectedCategoryFilter);
                     return filtered.length === 0 ? (
-                      <div className="p-8 text-center flex flex-col items-center justify-center">
-                        <p className="text-sm font-medium text-neutral-400">Tidak ada pengeluaran di kategori ini</p>
+                      <div className="py-8 text-center flex flex-col items-center justify-center">
+                        <p className="text-xs font-semibold text-zinc-500">Tidak ada pengeluaran di kategori ini</p>
                       </div>
                     ) : (
-                      <div className="divide-y divide-neutral-100">
-                        {filtered.map((expense) => {
-                          const budget = budgets.find((b) => b.id === expense.budgetId);
-                          const expDate = expense.date && 'toDate' in expense.date ? expense.date.toDate() : new Date();
+                      filtered.map((expense) => {
+                        const budget = budgets.find((b) => b.id === expense.budgetId);
+                        const expDate = expense.date && 'toDate' in expense.date ? expense.date.toDate() : new Date();
 
-                          return (
-                            <div key={expense.id} className="p-4 flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-poros-50 flex items-center justify-center flex-shrink-0">
-                                  <TrendingDown className="w-4 h-4 text-poros-600" />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-bold text-neutral-900 line-clamp-1">{expense.description || budget?.category || 'Pengeluaran'}</p>
-                                  <div className="flex items-center gap-1.5 mt-0.5">
-                                    <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">{budget?.category}</span>
-                                    <span className="w-1 h-1 rounded-full bg-neutral-200" />
-                                    <p className="text-[11px] text-neutral-400 font-medium">{format(expDate, 'd MMM, HH:mm', { locale: id })}</p>
-                                  </div>
+                        return (
+                          <div key={expense.id} className="py-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-zinc-950 border border-zinc-850 flex items-center justify-center flex-shrink-0">
+                                <TrendingDown className="w-3.5 h-3.5 text-zinc-500" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-zinc-200 line-clamp-1">{expense.description || budget?.category || 'Pengeluaran'}</p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">{budget?.category}</span>
+                                  <span className="w-1 h-1 rounded-full bg-zinc-800" />
+                                  <p className="text-[10px] text-zinc-500 font-medium">{format(expDate, 'd MMM, HH:mm', { locale: id })}</p>
                                 </div>
                               </div>
-                              <p className="text-sm font-bold text-neutral-900 tracking-tight">-{formatRupiah(expense.amount).replace('Rp', '').trim()}</p>
                             </div>
-                          );
-                        })}
-                      </div>
+                            <p className="text-sm font-semibold text-zinc-100 tracking-tight">-{formatRupiah(expense.amount).replace('Rp', '').trim()}</p>
+                          </div>
+                        );
+                      })
                     );
                   })()
                 )}
